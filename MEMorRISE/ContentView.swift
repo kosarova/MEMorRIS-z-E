@@ -4,27 +4,28 @@
 //
 //  Created by Roman Kobzarev on 06.07.2021.
 //
-
 import SwiftUI
 
 struct ContentView: View {
-    @State var emojis = ["🚗", "🚕", "🚙", "🚌", "🏎", "🚑", "🚒", "🚚", "🚜", "🚀", "🚝", "✈️", "🛥", "🚃", "🚓", "🚲", "🦽", "🚂", "🛳", "🚁"].shuffled()
-    @State var amountOfCards = Int.random(in: 4...20)
+    @ObservedObject var viewModel : EmojiMemoryGame
+    
     let gameNameTitle = Color("gameNameTitle")
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack{
             Spacer()
             Text("MEMorRiZe!").font(.largeTitle)
                 .multilineTextAlignment(.center)
                 .foregroundColor(gameNameTitle)
             ScrollView{
                 LazyVGrid (columns:
-                    [GridItem(.adaptive(minimum: 65))]){
-                    ForEach (emojis[0..<amountOfCards],
-                             id: \.self) { emoji in
-                        CardView(content: emoji)
+                    [GridItem(.adaptive(minimum: 70))]){
+                    ForEach (viewModel.cards) { card in
+                        CardView(card: card)
                             .aspectRatio(2/3, contentMode: .fit)
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
                     }
                 }
             }
@@ -45,8 +46,7 @@ struct ContentView: View {
     var switchToVehiches: some View {
         VStack {
             Button {
-                emojis = ["🚗", "🚕", "🚙", "🚌", "🏎", "🚑", "🚒", "🚚", "🚜", "🚀", "🚝", "✈️", "🛥", "🚃", "🚓", "🚲", "🦽", "🚂", "🛳", "🚁"].shuffled()
-                amountOfCards = Int.random(in: 4...emojis.count)
+                EmojiMemoryGame.emojis = ["🚗", "🚕", "🚙", "🚌", "🏎", "🚑", "🚒", "🚚", "🚜", "🚀", "🚝", "✈️", "🛥", "🚃", "🚓", "🚲", "🦽", "🚂", "🛳", "🚁"].shuffled()
             } label: {
                 Image(systemName: "car.circle").font(.system(size: 60))
             }
@@ -56,8 +56,7 @@ struct ContentView: View {
     var switchToAnimal: some View {
         VStack {
             Button {
-                emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐴", "🐍"].shuffled()
-                amountOfCards = Int.random(in: 4...emojis.count)
+                EmojiMemoryGame.emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐴", "🐍"].shuffled()
             } label: {
                 Image(systemName: "ant.circle").font(.system(size: 60))
             }
@@ -67,8 +66,7 @@ struct ContentView: View {
     var switchToFlags: some View {
         VStack {
             Button {
-                emojis = ["🇦🇺", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "🇩🇪", "🇮🇹", "🇪🇸", "🇮🇪", "🇨🇦", "🇷🇺", "🇺🇸", "🇺🇦", "🇯🇵", "🇫🇷", "🇨🇳", "🇰🇿", "🇧🇪"].shuffled()
-                amountOfCards = Int.random(in: 4...emojis.count)
+                EmojiMemoryGame.emojis = ["🇦🇺", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "🇩🇪", "🇮🇹", "🇪🇸", "🇮🇪", "🇨🇦", "🇷🇺", "🇺🇸", "🇺🇦", "🇯🇵", "🇫🇷", "🇨🇳", "🇰🇿", "🇧🇪"].shuffled()
             } label: {
                 Image(systemName: "flag.circle").font(.system(size: 60))
             }
@@ -78,22 +76,18 @@ struct ContentView: View {
 }
     
 struct CardView: View {
-    var content : String
-    @State var isFaceUp : Bool = true
+    var card : MemoryGame<String>.Card
     
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 20)
         ZStack {
-            if isFaceUp {
+            if card.isFaceUp {
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: 3)
-                Text(content).font(.largeTitle)
+                Text(card.content).font(.largeTitle)
             } else {
                 shape.fill()
             }
-        }
-        .onTapGesture {
-            isFaceUp = !isFaceUp
         }
     }
 }
@@ -123,9 +117,10 @@ struct CardView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        let game = EmojiMemoryGame()
+        ContentView(viewModel: game)
             .preferredColorScheme(.dark)
-        ContentView()
+        ContentView(viewModel: game)
             .preferredColorScheme(.light)
     }
 }

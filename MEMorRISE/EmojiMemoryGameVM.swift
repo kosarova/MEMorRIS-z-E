@@ -4,10 +4,9 @@
 //
 //  Created by Roman Kobzarev on 25.07.2021.
 //
-
 import SwiftUI
 
-class EmojiMemoryGame {
+class EmojiMemoryGame : ObservableObject {
     static var emojis = ["🚗", "🚕", "🚙", "🚌", "🏎", "🚑", "🚒", "🚚", "🚜", "🚀", "🚝", "✈️", "🛥", "🚃", "🚓", "🚲", "🦽", "🚂", "🛳", "🚁"]
     
     static func createMemorizeGame () -> MemoryGame<String> {
@@ -16,10 +15,15 @@ class EmojiMemoryGame {
         }
     }
     
-    private var model: MemoryGame<String> = createMemorizeGame()
+    @Published private var model: MemoryGame<String> = createMemorizeGame()
     
     var cards : Array<MemoryGame<String>.Card> {
         return model.cards
     }
    
+    //MARK: - Intent(s)
+    
+    func choose(_ card: MemoryGame<String>.Card) {
+        model.choose(card)
+    }
 }
