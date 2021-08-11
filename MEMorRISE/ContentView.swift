@@ -18,6 +18,12 @@ struct ContentView: View {
                 .multilineTextAlignment(.center)
                 .foregroundColor(gameNameTitle)
             ScrollView{
+                HStack {
+                    Spacer()
+                        .overlay(Text("Score: \(viewModel.score)"), alignment: .leading)
+                    Text(viewModel.themeName).font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
+                    Spacer()
+                }
                 LazyVGrid (columns:
                     [GridItem(.adaptive(minimum: 70))]){
                     ForEach (viewModel.cards) { card in
@@ -29,49 +35,25 @@ struct ContentView: View {
                     }
                 }
             }
-            .padding(.horizontal).foregroundColor(.red)
+            .padding(.horizontal).foregroundColor(viewModel.colorTheme)
             HStack {
-                Spacer()
-                switchToVehiches.font(.largeTitle)
-                Spacer()
-                switchToAnimal.font(.largeTitle)
-                Spacer()
-                switchToFlags.font(.largeTitle)
-                Spacer()
+                randomTheme
             }
-            
         }
         .foregroundColor(.blue)
     }
-    var switchToVehiches: some View {
+    var randomTheme : some View {
         VStack {
             Button {
-                EmojiMemoryGame.emojis = ["🚗", "🚕", "🚙", "🚌", "🏎", "🚑", "🚒", "🚚", "🚜", "🚀", "🚝", "✈️", "🛥", "🚃", "🚓", "🚲", "🦽", "🚂", "🛳", "🚁"].shuffled()
+                viewModel.newGame()
             } label: {
-                Image(systemName: "car.circle").font(.system(size: 60))
-            }
-            Text("Transport").font(.system(size: 15))
+                Image(systemName: "gamecontroller.fill")
+                    .padding(/*@START_MENU_TOKEN@*/[.top, .leading, .trailing], 10.0/*@END_MENU_TOKEN@*/)
+                    .font(.system(size: 45))
+              }
+            Text("New Game").font(.system(size: 15))
         }
-    }
-    var switchToAnimal: some View {
-        VStack {
-            Button {
-                EmojiMemoryGame.emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐔", "🐴", "🐍"].shuffled()
-            } label: {
-                Image(systemName: "ant.circle").font(.system(size: 60))
-            }
-            Text("Animal").font(.system(size: 15))
-            }
-    }
-    var switchToFlags: some View {
-        VStack {
-            Button {
-                EmojiMemoryGame.emojis = ["🇦🇺", "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "🇩🇪", "🇮🇹", "🇪🇸", "🇮🇪", "🇨🇦", "🇷🇺", "🇺🇸", "🇺🇦", "🇯🇵", "🇫🇷", "🇨🇳", "🇰🇿", "🇧🇪"].shuffled()
-            } label: {
-                Image(systemName: "flag.circle").font(.system(size: 60))
-            }
-            Text("Flags").font(.system(size: 15))
-        }
+        .foregroundColor(gameNameTitle)
     }
 }
     
@@ -84,7 +66,9 @@ struct CardView: View {
             if card.isFaceUp {
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: 3)
-                Text(card.content).font(.largeTitle)
+                Text(card.content).font(.system(size: 50))
+            } else if card.isMatching {
+                shape.opacity(0)
             } else {
                 shape.fill()
             }

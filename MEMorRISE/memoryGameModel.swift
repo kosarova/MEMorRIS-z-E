@@ -10,10 +10,12 @@ struct MemoryGame<CardContent> where CardContent : Equatable {
     struct Card : Identifiable {
         var isMatching = false
         var isFaceUp = false
-        
+        var hasAlreadyBeenSeen = false
         var content: CardContent
         var id: Int
     }
+    
+    var score = 0
     
     private(set) var cards : Array<Card>
     
@@ -27,11 +29,19 @@ struct MemoryGame<CardContent> where CardContent : Equatable {
                 if cards[chosenIndex].content == cards[potentialIndexValue].content {
                     cards[chosenIndex].isMatching = true
                     cards[potentialIndexValue].isMatching = true
+                    score += 2
+                } else {
+                    if cards[chosenIndex].hasAlreadyBeenSeen || cards[potentialIndexValue].hasAlreadyBeenSeen {
+                        score -= 1
+                    }
                 }
                 oneAndOnlyOneOpenCard = nil
             } else {
                 for index in cards.indices {
+                    if cards[index].isFaceUp {
                     cards[index].isFaceUp = false
+                    cards[index].hasAlreadyBeenSeen = true
+                    }
                 }
                 oneAndOnlyOneOpenCard = chosenIndex
             }
@@ -46,5 +56,6 @@ struct MemoryGame<CardContent> where CardContent : Equatable {
             cards.append(Card(content: content, id: pairIndex * 2))
             cards.append(Card(content: content, id: pairIndex * 2 + 1))
         }
+        cards.shuffle()
     }
 }
