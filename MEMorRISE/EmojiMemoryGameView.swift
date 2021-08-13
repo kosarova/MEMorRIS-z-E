@@ -1,13 +1,13 @@
 //
-//  ContentView.swift
+//  EmojiMemoryGameView.swift
 //  MEMorRISE
 //
 //  Created by Roman Kobzarev on 06.07.2021.
 //
 import SwiftUI
 
-struct ContentView: View {
-    @ObservedObject var viewModel : EmojiMemoryGame
+struct EmojiMemoryGameView: View {
+    @ObservedObject var gameVM : EmojiMemoryGame
     
     let gameNameTitle = Color("gameNameTitle")
     
@@ -20,22 +20,22 @@ struct ContentView: View {
             ScrollView{
                 HStack {
                     Spacer()
-                        .overlay(Text("Score: \(viewModel.score)"), alignment: .leading)
-                    Text(viewModel.themeName).font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
+                        .overlay(Text("Score: \(gameVM.score)"), alignment: .leading)
+                    Text(gameVM.themeName).font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
                     Spacer()
                 }
                 LazyVGrid (columns:
                     [GridItem(.adaptive(minimum: 70))]){
-                    ForEach (viewModel.cards) { card in
+                    ForEach (gameVM.cards) { card in
                         CardView(card: card)
                             .aspectRatio(2/3, contentMode: .fit)
                             .onTapGesture {
-                                viewModel.choose(card)
+                                gameVM.choose(card)
                             }
                     }
                 }
             }
-            .padding(.horizontal).foregroundColor(viewModel.colorTheme)
+            .padding(.horizontal).foregroundColor(gameVM.colorTheme)
             HStack {
                 randomTheme
             }
@@ -45,7 +45,7 @@ struct ContentView: View {
     var randomTheme : some View {
         VStack {
             Button {
-                viewModel.newGame()
+                gameVM.newGame()
             } label: {
                 Image(systemName: "gamecontroller.fill")
                     .padding(/*@START_MENU_TOKEN@*/[.top, .leading, .trailing], 10.0/*@END_MENU_TOKEN@*/)
@@ -58,7 +58,7 @@ struct ContentView: View {
 }
     
 struct CardView: View {
-    var card : MemoryGame<String>.Card
+    var card : EmojiMemoryGame.Card
     
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 20)
@@ -102,9 +102,10 @@ struct CardView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let game = EmojiMemoryGame()
-        ContentView(viewModel: game)
+        EmojiMemoryGameView(gameVM: game)
             .preferredColorScheme(.dark)
-        ContentView(viewModel: game)
+        EmojiMemoryGameView(gameVM: game)
             .preferredColorScheme(.light)
     }
 }
+ 
