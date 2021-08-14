@@ -61,18 +61,28 @@ struct CardView: View {
     var card : EmojiMemoryGame.Card
     
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 20)
-        ZStack {
-            if card.isFaceUp {
-                shape.fill().foregroundColor(.white)
-                shape.strokeBorder(lineWidth: 3)
-                Text(card.content).font(.system(size: 50))
-            } else if card.isMatching {
-                shape.opacity(0)
-            } else {
-                shape.fill()
+        GeometryReader { geomentry in
+            let shape = RoundedRectangle(cornerRadius: DrawingConstant.cornerRadius)
+            ZStack {
+                if card.isFaceUp {
+                    shape.fill().foregroundColor(.white)
+                    shape.strokeBorder(lineWidth: DrawingConstant.lineWidth)
+                    Text(card.content).font(fontImage(in: geomentry.size))
+                } else if card.isMatching {
+                    shape.opacity(0)
+                } else {
+                    shape.fill()
+                }
             }
         }
+    }
+    func fontImage(in size: CGSize) -> Font{
+        Font.system(size: min(size.width, size.height) * DrawingConstant.fontScale)
+    }
+    struct DrawingConstant {
+        static let fontScale : CGFloat = 0.8
+        static let lineWidth : CGFloat = 3
+        static let cornerRadius : CGFloat = 20
     }
 }
 
